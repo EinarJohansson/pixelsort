@@ -1,5 +1,5 @@
 import './App.css'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import init from 'wasm'
 
 const App = () =>  {
@@ -7,7 +7,7 @@ const App = () =>  {
   const canvasRef = useRef(null)
   const didMountRef = useRef(false)
   
-const getImageData = () => {
+const getImageData = useCallback(() => {
     return new Promise((resolve, reject) => {
       const canvas = canvasRef.current
       const ctx = canvas.getContext('2d')
@@ -23,48 +23,46 @@ const getImageData = () => {
       }
       img.onerror = e => reject(e)
     })
-  }
+  }, [image])
 
   useEffect( () => {
-    const initCanvas = async () => {
+    const updateCanvas = async () => {
+      // Load wasm functionality
       let mod = await init()
-      console.log(mod)
 
-      console.log('memory: ');
-      console.log(mod.memory.buffer);
-  
+      // Load the current image data
       const img_data = await getImageData()
-      console.log(img_data)
 
+      // How many bytes we want to allocate on WASM's linear memory
       const bytes = img_data.data.byteLength
-      console.log("bytes: " + bytes)
-
+      // Get a pointer to the newly allocated buffer
       const ptr = mod.alloc(bytes)
-      console.log("ptr: " + ptr)
       
+      // Create a handle to the WASM's linear memory
       const mem = new Uint8Array(mod.memory.buffer, ptr, bytes) 
       
-      console.log("mem: ")
+      // Update WASM memory with the new image buffer
       mem.set(img_data.data)
-      console.log(mem)
 
+      // Modify the memory
       mod.sort(ptr, bytes)
 
+      // Create a new handle to the updated memory
       const new_mem = new Uint8ClampedArray(mod.memory.buffer, ptr, bytes)
-      console.log(new_mem);
-
+      
+      // Set the canvas image to the modifyed image
       img_data.data.set(new_mem)
-
-      console.log(img_data);
       
       const canvas = canvasRef.current
       const ctx = canvas.getContext('2d')
 
+      // Draw our updated image
       ctx.putImageData(img_data,0,0);
     }
     
+    // Check if we have mounted the component or not
     if (didMountRef.current)
-      initCanvas()
+      updateCanvas()
 
     didMountRef.current = true
   }, [image, getImageData])

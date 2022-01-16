@@ -1,25 +1,5 @@
 use wasm_bindgen::{prelude::*};
 
-struct SRGB(u8, u8, u8);
-
-struct Image {
-  pixels: Vec<SRGB>
-}
-
-impl Image {
-  fn new(data: &mut Vec<u8>, height: usize, width: usize) -> Self {
-    unsafe {
-      let pixels: Vec<SRGB> =
-        data
-        .chunks_mut(3)
-        .map(|rgb| SRGB(rgb[0], rgb[1], rgb[2]))
-        .collect();
-
-      Self {pixels }
-    }
-  }
-}
-
 /// Allocate memory into the module's linear memory
 /// and return the offset to the start of the block.
 #[wasm_bindgen]
