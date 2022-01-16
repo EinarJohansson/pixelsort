@@ -1,4 +1,24 @@
-use wasm_bindgen::prelude::*;
+use wasm_bindgen::{prelude::*};
+
+struct SRGB(u8, u8, u8);
+
+struct Image {
+  pixels: Vec<SRGB>
+}
+
+impl Image {
+  fn new(data: &mut Vec<u8>, height: usize, width: usize) -> Self {
+    unsafe {
+      let pixels: Vec<SRGB> =
+        data
+        .chunks_mut(3)
+        .map(|rgb| SRGB(rgb[0], rgb[1], rgb[2]))
+        .collect();
+
+      Self {pixels }
+    }
+  }
+}
 
 /// Allocate memory into the module's linear memory
 /// and return the offset to the start of the block.
@@ -23,12 +43,17 @@ pub fn alloc(len: usize) -> *mut u8 {
 /// its length, return the sum of its elements.
 #[wasm_bindgen]
 #[no_mangle]
-pub fn first_elem(ptr: *mut u8, len: usize) -> u8 {
+pub fn sort(ptr: *mut u8, len: usize) {
   // create a Vec<u8> from the pointer to the
   // linear memory and the length
   unsafe {
-    // actually compute the sum and return it
-    let data = Vec::from_raw_parts(ptr, len, len);
-    data[0]
+    let mut data= Vec::from_raw_parts(ptr, len, len);
+
+    // invert
+    for i in (0..data.len()).step_by(4) {
+      data[i] = 255 - data[i]; //r
+      data[i+1] = 255 - data[i+1]; //g
+      data[i+2] = 255 - data[i+2]; //b
+    }
   }
 }

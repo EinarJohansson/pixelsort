@@ -17,11 +17,9 @@ export function alloc(len) {
 * its length, return the sum of its elements.
 * @param {number} ptr
 * @param {number} len
-* @returns {number}
 */
-export function first_elem(ptr, len) {
-    var ret = wasm.first_elem(ptr, len);
-    return ret;
+export function sort(ptr, len) {
+    wasm.sort(ptr, len);
 }
 
 async function load(module, imports) {

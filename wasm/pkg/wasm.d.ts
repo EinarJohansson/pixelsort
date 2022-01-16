@@ -12,16 +12,15 @@ export function alloc(len: number): number;
 * its length, return the sum of its elements.
 * @param {number} ptr
 * @param {number} len
-* @returns {number}
 */
-export function first_elem(ptr: number, len: number): number;
+export function sort(ptr: number, len: number): void;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly alloc: (a: number) => number;
-  readonly first_elem: (a: number, b: number) => number;
+  readonly sort: (a: number, b: number) => void;
 }
 
 /**

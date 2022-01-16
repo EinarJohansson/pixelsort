@@ -5,51 +5,15 @@ import init from 'wasm'
 const App = () =>  {
   const [image, setImage] = useState("")
   const canvasRef = useRef(null)
-  const didMountRef = useRef(false);
-
-  useEffect( () => {
-    const doSum = async () => {
-      let mod = await init()
-      console.log(mod)
+  const didMountRef = useRef(false)
   
-      const img_data = await getImageData(image)
-      console.log(img_data);
-
-      const bytes = img_data.data.byteLength;
-      console.log("bytes: " + bytes);
-
-      const ptr = mod.alloc(bytes) // Funkar!
-      console.log("ptr: " + ptr);
-      
-      const mem = new Uint8Array(mod.memory.buffer, ptr, bytes); 
-      
-      console.log("mem: ");
-      mem.set(img_data.data);
-      console.log(mem);
-
-      const first = mod.first_elem(ptr, bytes)
-      console.log("first: " + first);
-    }
-    
-    if (didMountRef.current)
-      doSum()
-
-    didMountRef.current = true;
-  }, [image])
-
-  const handleChange = e => {
-    const file = e.target.files[0]
-    if (file) 
-      setImage(URL.createObjectURL(file))
-  }
-
-  const getImageData = file => {
+const getImageData = () => {
     return new Promise((resolve, reject) => {
       const canvas = canvasRef.current
       const ctx = canvas.getContext('2d')
 
       const img = new Image()
-      img.src = file
+      img.src = image
 
       img.onload = () => {
         canvas.width = img.width
@@ -59,6 +23,57 @@ const App = () =>  {
       }
       img.onerror = e => reject(e)
     })
+  }
+
+  useEffect( () => {
+    const initCanvas = async () => {
+      let mod = await init()
+      console.log(mod)
+
+      console.log('memory: ');
+      console.log(mod.memory.buffer);
+  
+      const img_data = await getImageData()
+      console.log(img_data)
+
+      const bytes = img_data.data.byteLength
+      console.log("bytes: " + bytes)
+
+      const ptr = mod.alloc(bytes)
+      console.log("ptr: " + ptr)
+      
+      const mem = new Uint8Array(mod.memory.buffer, ptr, bytes) 
+      
+      console.log("mem: ")
+      mem.set(img_data.data)
+      console.log(mem)
+
+      mod.sort(ptr, bytes)
+
+      const new_mem = new Uint8ClampedArray(mod.memory.buffer, ptr, bytes)
+      console.log(new_mem);
+
+      img_data.data.set(new_mem)
+
+      console.log(img_data);
+      
+      const canvas = canvasRef.current
+      const ctx = canvas.getContext('2d')
+
+      ctx.putImageData(img_data,0,0);
+    }
+    
+    if (didMountRef.current)
+      initCanvas()
+
+    didMountRef.current = true
+  }, [image, getImageData])
+
+
+  const handleChange = e => {
+    const file = e.target.files[0]
+    if (file)
+      setImage(URL.createObjectURL(file))
   }
 
   return (
@@ -72,4 +87,4 @@ const App = () =>  {
   )
 }
 
-export default App;
+export default App
