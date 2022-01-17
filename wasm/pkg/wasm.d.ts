@@ -11,22 +11,30 @@ export function init_panic_hook(): void;
 */
 export function alloc(len: number): number;
 /**
-* Given a pointer to the start of a byte array and
-* its length, return the sum of its elements.
+*/
+export class ImageHandle {
+  free(): void;
+/**
 * @param {number} ptr
 * @param {number} len
 * @param {number} width
 * @param {number} height
 */
-export function sort(ptr: number, len: number, width: number, height: number): void;
+  constructor(ptr: number, len: number, width: number, height: number);
+/**
+*/
+  sort(): void;
+}
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
+  readonly __wbg_imagehandle_free: (a: number) => void;
+  readonly imagehandle_new: (a: number, b: number, c: number, d: number) => number;
+  readonly imagehandle_sort: (a: number) => void;
   readonly init_panic_hook: () => void;
   readonly alloc: (a: number) => number;
-  readonly sort: (a: number, b: number, c: number, d: number) => void;
   readonly __wbindgen_free: (a: number, b: number) => void;
   readonly __wbindgen_malloc: (a: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number) => number;

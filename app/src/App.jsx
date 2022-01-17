@@ -1,6 +1,6 @@
 import './App.css'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import init from 'wasm'
+import init, {ImageHandle} from 'wasm'
 
 const App = () =>  {
   const [image, setImage] = useState("")
@@ -30,6 +30,7 @@ const getImageData = useCallback(() => {
       // Load wasm functionality
       let mod = await init()
 
+      // More descriptive error messages
       mod.init_panic_hook()
 
       // Load the current image data
@@ -49,8 +50,11 @@ const getImageData = useCallback(() => {
       const width = img_data.width
       const height = img_data.height
 
-      // Modify the memory
-      mod.sort(ptr, bytes, width, height)
+      // Create a handle to our image
+      let img_handle = new ImageHandle(ptr, bytes, width, height);
+
+      // Sort the pixels
+      img_handle.sort();
 
       // Create a new handle to the updated memory
       const new_mem = new Uint8ClampedArray(mod.memory.buffer, ptr, bytes)
@@ -58,11 +62,12 @@ const getImageData = useCallback(() => {
       // Set the canvas image to the modifyed image
       img_data.data.set(new_mem)
       
+      // Get our output canvas
       const canvas = canvasRef.current
       const ctx = canvas.getContext('2d')
 
       // Draw our updated image
-      ctx.putImageData(img_data,0,0);
+      ctx.putImageData(img_data, 0, 0);
     }
     
     // Check if we have mounted the component or not

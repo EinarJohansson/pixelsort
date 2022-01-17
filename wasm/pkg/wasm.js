@@ -20,34 +20,6 @@ function takeObject(idx) {
     dropObject(idx);
     return ret;
 }
-/**
-*/
-export function init_panic_hook() {
-    wasm.init_panic_hook();
-}
-
-/**
-* Allocate memory into the module's linear memory
-* and return the offset to the start of the block.
-* @param {number} len
-* @returns {number}
-*/
-export function alloc(len) {
-    var ret = wasm.alloc(len);
-    return ret;
-}
-
-/**
-* Given a pointer to the start of a byte array and
-* its length, return the sum of its elements.
-* @param {number} ptr
-* @param {number} len
-* @param {number} width
-* @param {number} height
-*/
-export function sort(ptr, len, width, height) {
-    wasm.sort(ptr, len, width, height);
-}
 
 let cachedTextDecoder = new TextDecoder('utf-8', { ignoreBOM: true, fatal: true });
 
@@ -63,6 +35,22 @@ function getUint8Memory0() {
 
 function getStringFromWasm0(ptr, len) {
     return cachedTextDecoder.decode(getUint8Memory0().subarray(ptr, ptr + len));
+}
+/**
+*/
+export function init_panic_hook() {
+    wasm.init_panic_hook();
+}
+
+/**
+* Allocate memory into the module's linear memory
+* and return the offset to the start of the block.
+* @param {number} len
+* @returns {number}
+*/
+export function alloc(len) {
+    var ret = wasm.alloc(len);
+    return ret;
 }
 
 function addHeapObject(obj) {
@@ -136,6 +124,44 @@ function getInt32Memory0() {
     }
     return cachegetInt32Memory0;
 }
+/**
+*/
+export class ImageHandle {
+
+    static __wrap(ptr) {
+        const obj = Object.create(ImageHandle.prototype);
+        obj.ptr = ptr;
+
+        return obj;
+    }
+
+    __destroy_into_raw() {
+        const ptr = this.ptr;
+        this.ptr = 0;
+
+        return ptr;
+    }
+
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_imagehandle_free(ptr);
+    }
+    /**
+    * @param {number} ptr
+    * @param {number} len
+    * @param {number} width
+    * @param {number} height
+    */
+    constructor(ptr, len, width, height) {
+        var ret = wasm.imagehandle_new(ptr, len, width, height);
+        return ImageHandle.__wrap(ret);
+    }
+    /**
+    */
+    sort() {
+        wasm.imagehandle_sort(this.ptr);
+    }
+}
 
 async function load(module, imports) {
     if (typeof Response === 'function' && module instanceof Response) {
@@ -174,9 +200,6 @@ async function init(input) {
     }
     const imports = {};
     imports.wbg = {};
-    imports.wbg.__wbg_log_1e04f16925d14477 = function(arg0) {
-        console.log(arg0 >>> 0);
-    };
     imports.wbg.__wbg_new_693216e109162396 = function() {
         var ret = new Error();
         return addHeapObject(ret);
@@ -197,6 +220,9 @@ async function init(input) {
     };
     imports.wbg.__wbindgen_object_drop_ref = function(arg0) {
         takeObject(arg0);
+    };
+    imports.wbg.__wbindgen_throw = function(arg0, arg1) {
+        throw new Error(getStringFromWasm0(arg0, arg1));
     };
 
     if (typeof input === 'string' || (typeof Request === 'function' && input instanceof Request) || (typeof URL === 'function' && input instanceof URL)) {
