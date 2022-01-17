@@ -1,6 +1,9 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
+*/
+export function init_panic_hook(): void;
+/**
 * Allocate memory into the module's linear memory
 * and return the offset to the start of the block.
 * @param {number} len
@@ -12,15 +15,21 @@ export function alloc(len: number): number;
 * its length, return the sum of its elements.
 * @param {number} ptr
 * @param {number} len
+* @param {number} width
+* @param {number} height
 */
-export function sort(ptr: number, len: number): void;
+export function sort(ptr: number, len: number, width: number, height: number): void;
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
+  readonly init_panic_hook: () => void;
   readonly alloc: (a: number) => number;
-  readonly sort: (a: number, b: number) => void;
+  readonly sort: (a: number, b: number, c: number, d: number) => void;
+  readonly __wbindgen_free: (a: number, b: number) => void;
+  readonly __wbindgen_malloc: (a: number) => number;
+  readonly __wbindgen_realloc: (a: number, b: number, c: number) => number;
 }
 
 /**

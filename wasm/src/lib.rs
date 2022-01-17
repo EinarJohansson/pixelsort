@@ -1,4 +1,22 @@
-use wasm_bindgen::{prelude::*};
+extern crate console_error_panic_hook;
+use wasm_bindgen::prelude::*;
+struct RGBA(u8, u8, u8, u8);
+
+use std::panic;
+
+#[wasm_bindgen]
+pub fn init_panic_hook() {
+  console_error_panic_hook::set_once();
+}
+
+#[wasm_bindgen]
+extern "C" {
+    #[wasm_bindgen(js_namespace = console, js_name = log)]
+    fn log_usize(a: usize);
+
+    #[wasm_bindgen(js_namespace = console, js_name = log)]
+    fn log_u8(a: u8);
+}
 
 /// Allocate memory into the module's linear memory
 /// and return the offset to the start of the block.
@@ -23,17 +41,36 @@ pub fn alloc(len: usize) -> *mut u8 {
 /// its length, return the sum of its elements.
 #[wasm_bindgen]
 #[no_mangle]
-pub fn sort(ptr: *mut u8, len: usize) {
-  // create a Vec<u8> from the pointer to the
-  // linear memory and the length
+pub fn sort(ptr: *mut u8, len: usize, width: usize, height: usize) {
   unsafe {
+    log_usize(width);
+    log_usize(height);
+
+    const CHUNK_SIZE: usize = 4;
+
     let mut data= Vec::from_raw_parts(ptr, len, len);
 
-    // invert
-    for i in (0..data.len()).step_by(4) {
-      data[i] = 255 - data[i]; //r
-      data[i+1] = 255 - data[i+1]; //g
-      data[i+2] = 255 - data[i+2]; //b
+    let mut pixels: Vec<RGBA> = 
+      data
+      .chunks_exact_mut(CHUNK_SIZE)
+      .map(|rgba| RGBA(rgba[0], rgba[1], rgba[2],rgba[3]))
+      .collect();
+
+    let sorted: Vec<&mut RGBA> = 
+      pixels
+      .chunks_exact_mut(width)
+      .flat_map(|f| {
+        f.sort_by(|a, b| a.0.cmp(&b.0));
+        f
+      }
+      )
+      .collect();
+
+    for (i, pix) in data.chunks_exact_mut(CHUNK_SIZE).enumerate() {
+      pix[0] = sorted[i].0;
+      pix[1] = sorted[i].1;
+      pix[2] = sorted[i].2;
+      pix[3] = sorted[i].3;
     }
   }
 }

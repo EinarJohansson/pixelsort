@@ -30,6 +30,8 @@ const getImageData = useCallback(() => {
       // Load wasm functionality
       let mod = await init()
 
+      mod.init_panic_hook()
+
       // Load the current image data
       const img_data = await getImageData()
 
@@ -44,8 +46,11 @@ const getImageData = useCallback(() => {
       // Update WASM memory with the new image buffer
       mem.set(img_data.data)
 
+      const width = img_data.width
+      const height = img_data.height
+
       // Modify the memory
-      mod.sort(ptr, bytes)
+      mod.sort(ptr, bytes, width, height)
 
       // Create a new handle to the updated memory
       const new_mem = new Uint8ClampedArray(mod.memory.buffer, ptr, bytes)
