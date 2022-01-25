@@ -54,7 +54,7 @@ const getImageData = useCallback(() => {
       let img_handle = new ImageHandle(ptr, bytes, width, height);
 
       // Sort the pixels
-      img_handle.sort();
+      img_handle.counting_sort()
 
       // Create a new handle to the updated memory
       const new_mem = new Uint8ClampedArray(mod.memory.buffer, ptr, bytes)

@@ -1,14 +1,12 @@
 extern crate console_error_panic_hook;
+
 use wasm_bindgen::prelude::*;
+
 pub struct RGBA(u8, u8, u8, u8);
 
-#[wasm_bindgen]
-extern "C" {
-  #[wasm_bindgen(js_namespace = console, js_name = log)]
-  fn log_usize(a: usize);
-
-  #[wasm_bindgen(js_namespace = console, js_name = log)]
-  fn log_u8(a: u8);
+// Macro for console logs
+macro_rules! console_log {
+  ($($t:tt)*) => (web_sys::console::log_1(&format!($($t)*).into()))
 }
 
 #[wasm_bindgen]
@@ -29,6 +27,36 @@ impl ImageHandle {
         width,
         height,
       }
+    }
+  }
+
+  pub fn counting_sort(&mut self) {
+    // Counting sort
+    const CHUNK_SIZE: usize = 4;
+    const COLOR_INDEX: usize = 2;
+
+    const K: usize = u8::MAX as usize +1;
+    let n: usize = self.data.len();
+
+    let mut hist: Vec<usize> = vec![0; K];
+
+    for val in self.data.iter() {
+      hist[*val as usize] += 1;
+    }
+
+    for i in 1..K {
+      hist[i] += hist[i-1];
+    }
+
+    let mut sorted: Vec<u8> = vec![0; n]; 
+
+    for i in (0..n).rev() {
+      sorted[hist[self.data[i] as usize] as usize -1] = self.data[i];
+      hist[self.data[i] as usize] -= 1;
+    }
+
+    for (i, pix) in self.data.iter_mut().enumerate() {
+      *pix = sorted[i] as u8;
     }
   }
 
