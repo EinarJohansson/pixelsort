@@ -2,6 +2,7 @@ extern crate console_error_panic_hook;
 
 use wasm_bindgen::prelude::*;
 
+#[derive(Clone, Copy)]
 pub struct RGBA(u8, u8, u8, u8);
 
 // Macro for console logs
@@ -34,36 +35,38 @@ impl ImageHandle {
     // Counting sort
     const CHUNK_SIZE: usize = 4;
     const COLOR_INDEX: usize = 1;
+    const K: usize = u8::MAX as usize + 1;
 
-    const K: usize = u8::MAX as usize +1;
-    
-    let blues: Vec<u8> = self.data
-      .chunks_exact_mut(CHUNK_SIZE)
-      .map(|rgba| rgba[COLOR_INDEX])
+    let pixels: Vec<RGBA> = self.data
+      .chunks_exact(CHUNK_SIZE)
+      .map(|pixel| RGBA(pixel[0], pixel[1], pixel[2], pixel[3]))
       .collect();
-    
-    let n: usize = blues.len();
+
+    let n: usize = pixels.len();
 
     let mut hist: Vec<usize> = vec![0; K];
 
-    for val in blues.iter() {
-      hist[*val as usize] += 1;
+    for val in pixels.iter() {
+      hist[val.1 as usize] += 1; // color index 1
     }
 
     for i in 1..K {
-      hist[i] += hist[i-1];
+      hist[i] += hist[i - 1];
     }
 
-    let mut sorted: Vec<u8> = vec![0; n];
+    let mut sorted: Vec<RGBA> = vec![RGBA(0, 0, 0, 0); n];
 
     for i in (0..n).rev() {
-      let index = blues[i] as usize;
-      sorted[hist[index] as usize -1] = blues[i];
+      let index = pixels[i].1 as usize;
+      sorted[hist[index] as usize - 1] = pixels[i];
       hist[index] -= 1;
     }
 
     for i in 0..n {
-      self.data[(4*i) + COLOR_INDEX] = sorted[i];
+      self.data[(4 * i) + 0] = sorted[i].0;
+      self.data[(4 * i) + 1] = sorted[i].1;
+      self.data[(4 * i) + 2] = sorted[i].2;
+      self.data[(4 * i) + 3] = sorted[i].3;
     }
   }
 

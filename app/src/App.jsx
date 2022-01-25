@@ -54,7 +54,10 @@ const getImageData = useCallback(() => {
       let img_handle = new ImageHandle(ptr, bytes, width, height);
 
       // Sort the pixels
+      var startTime = performance.now()
       img_handle.counting_sort()
+      var endTime = performance.now()
+      console.log(`Sorting took ${endTime - startTime} milliseconds`)
 
       // Create a new handle to the updated memory
       const new_mem = new Uint8ClampedArray(mod.memory.buffer, ptr, bytes)
