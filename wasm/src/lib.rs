@@ -33,14 +33,20 @@ impl ImageHandle {
   pub fn counting_sort(&mut self) {
     // Counting sort
     const CHUNK_SIZE: usize = 4;
-    const COLOR_INDEX: usize = 2;
+    const COLOR_INDEX: usize = 1;
 
     const K: usize = u8::MAX as usize +1;
-    let n: usize = self.data.len();
+    
+    let blues: Vec<u8> = self.data
+      .chunks_exact_mut(CHUNK_SIZE)
+      .map(|rgba| rgba[COLOR_INDEX])
+      .collect();
+    
+    let n: usize = blues.len();
 
     let mut hist: Vec<usize> = vec![0; K];
 
-    for val in self.data.iter() {
+    for val in blues.iter() {
       hist[*val as usize] += 1;
     }
 
@@ -48,15 +54,16 @@ impl ImageHandle {
       hist[i] += hist[i-1];
     }
 
-    let mut sorted: Vec<u8> = vec![0; n]; 
+    let mut sorted: Vec<u8> = vec![0; n];
 
     for i in (0..n).rev() {
-      sorted[hist[self.data[i] as usize] as usize -1] = self.data[i];
-      hist[self.data[i] as usize] -= 1;
+      let index = blues[i] as usize;
+      sorted[hist[index] as usize -1] = blues[i];
+      hist[index] -= 1;
     }
 
-    for (i, pix) in self.data.iter_mut().enumerate() {
-      *pix = sorted[i] as u8;
+    for i in 0..n {
+      self.data[(4*i) + COLOR_INDEX] = sorted[i];
     }
   }
 
