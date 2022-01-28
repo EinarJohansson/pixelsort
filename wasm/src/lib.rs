@@ -31,67 +31,61 @@ impl ImageHandle {
     }
   }
 
-  pub fn counting_sort(&mut self) {
-    // Counting sort
-    const CHUNK_SIZE: usize = 4;
-    const COLOR_INDEX: usize = 1;
+  fn count_sort(&self, row: &[RGBA]) -> Vec<RGBA> {
+    // Counting sort algorithm, time complexity: O(self.width + 255)
+
+    // Range for the element in list -> [0, 255] -> 256 differet values. 
     const K: usize = u8::MAX as usize + 1;
 
-    let pixels: Vec<RGBA> = self.data
-      .chunks_exact(CHUNK_SIZE)
-      .map(|pixel| RGBA(pixel[0], pixel[1], pixel[2], pixel[3]))
-      .collect();
-
-    let n: usize = pixels.len();
-
+    // Histogram for counting occurences of elements
     let mut hist: Vec<usize> = vec![0; K];
 
-    for val in pixels.iter() {
+    // Count the elements
+    for val in row.iter() {
       hist[val.1 as usize] += 1; // color index 1
     }
 
+    // Cumulative sum
     for i in 1..K {
       hist[i] += hist[i - 1];
     }
 
-    let mut sorted: Vec<RGBA> = vec![RGBA(0, 0, 0, 0); n];
+    // Vector for the sorted row
+    let mut sorted: Vec<RGBA> = vec![RGBA(0, 0, 0, 0); self.width];
 
-    for i in (0..n).rev() {
-      let index = pixels[i].1 as usize;
-      sorted[hist[index] as usize - 1] = pixels[i];
+    // Add values in ascending order
+    for i in (0..self.width).rev() {
+      let index = row[i].1 as usize;
+      sorted[hist[index] as usize - 1] = row[i];
       hist[index] -= 1;
     }
-
-    for i in 0..n {
-      self.data[(4 * i) + 0] = sorted[i].0;
-      self.data[(4 * i) + 1] = sorted[i].1;
-      self.data[(4 * i) + 2] = sorted[i].2;
-      self.data[(4 * i) + 3] = sorted[i].3;
-    }
+    sorted
   }
 
   pub fn sort(&mut self) {
+    // Sort image row by row
     const CHUNK_SIZE: usize = 4;
 
-    let mut pixels: Vec<RGBA> = self
-      .data
-      .chunks_exact_mut(CHUNK_SIZE)
-      .map(|rgba| RGBA(rgba[0], rgba[1], rgba[2], rgba[3]))
+    // Gather all RGBA pixels in the image
+    let pixels: Vec<RGBA> = self.data
+      .chunks_exact(CHUNK_SIZE)
+      .map(|pixel| RGBA(pixel[0], pixel[1], pixel[2], pixel[3]))
       .collect();
-
-    let sorted: Vec<&mut RGBA> = pixels
-      .chunks_exact_mut(self.width)
-      .flat_map(|f| {
-        f.sort_by(|a, b| a.0.cmp(&b.0));
-        f
+    
+    // Sort pixels row by row
+    let sorted: Vec<RGBA> = pixels
+      .chunks_exact(self.width)
+      .flat_map(|row| {
+        self.count_sort(row)
       })
       .collect();
 
-    for (i, pix) in self.data.chunks_exact_mut(CHUNK_SIZE).enumerate() {
-      pix[0] = sorted[i].0;
-      pix[1] = sorted[i].1;
-      pix[2] = sorted[i].2;
-      pix[3] = sorted[i].3;
+    // Write the sorted buffer to memory
+    for (i, pixel) in self.data.chunks_exact_mut(CHUNK_SIZE).enumerate() {
+      pixel[0] = sorted[i].0;
+      pixel[1] = sorted[i].1;
+      pixel[2] = sorted[i].2;
+      pixel[3] = sorted[i].3;
     }
   }
 }

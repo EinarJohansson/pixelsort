@@ -158,11 +158,6 @@ export class ImageHandle {
     }
     /**
     */
-    counting_sort() {
-        wasm.imagehandle_counting_sort(this.ptr);
-    }
-    /**
-    */
     sort() {
         wasm.imagehandle_sort(this.ptr);
     }

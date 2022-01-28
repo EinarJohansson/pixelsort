@@ -23,9 +23,6 @@ export class ImageHandle {
   constructor(ptr: number, len: number, width: number, height: number);
 /**
 */
-  counting_sort(): void;
-/**
-*/
   sort(): void;
 }
 
@@ -35,7 +32,6 @@ export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly __wbg_imagehandle_free: (a: number) => void;
   readonly imagehandle_new: (a: number, b: number, c: number, d: number) => number;
-  readonly imagehandle_counting_sort: (a: number) => void;
   readonly imagehandle_sort: (a: number) => void;
   readonly init_panic_hook: () => void;
   readonly alloc: (a: number) => number;

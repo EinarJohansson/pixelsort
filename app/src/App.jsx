@@ -10,7 +10,7 @@ const App = () =>  {
 const getImageData = useCallback(() => {
     return new Promise((resolve, reject) => {
       const canvas = canvasRef.current
-      const ctx = canvas.getContext('2d')
+      const ctx = canvas.getContext('2d', { alpha: false })
 
       const img = new Image()
       img.src = image
@@ -55,7 +55,7 @@ const getImageData = useCallback(() => {
 
       // Sort the pixels
       var startTime = performance.now()
-      img_handle.counting_sort()
+      img_handle.sort()
       var endTime = performance.now()
       console.log(`Sorting took ${endTime - startTime} milliseconds`)
 
@@ -67,7 +67,7 @@ const getImageData = useCallback(() => {
       
       // Get our output canvas
       const canvas = canvasRef.current
-      const ctx = canvas.getContext('2d')
+      const ctx = canvas.getContext('2d', { alpha: false })
 
       // Draw our updated image
       ctx.putImageData(img_data, 0, 0);
@@ -79,7 +79,6 @@ const getImageData = useCallback(() => {
 
     didMountRef.current = true
   }, [image, getImageData])
-
 
   const handleChange = e => {
     const file = e.target.files[0]
