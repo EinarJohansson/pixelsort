@@ -9,5 +9,5 @@ Made by using React, Rust and WASM.
   - [ ] Kolumn / rad - vis sortering
 - [ ] Optimera
   - [x] Counting sort
-  - [ ] Minska antalet pixlar att sortera
+  - [x] Minska antalet pixlar att sortera
 - [ ] Design

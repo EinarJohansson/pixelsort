@@ -16,9 +16,17 @@ const getImageData = useCallback(() => {
       img.src = image
 
       img.onload = () => {
-        canvas.width = img.width
-        canvas.height = img.height
+        // Reduces the amount of pixels to work with if big image
+        const scale = (img.height > 3000 || img.width > 3000) ? 2 : 1;
+
+        console.log('width: ', img.width);
+        console.log('scale: ', scale);
+
+        canvas.width = img.width / scale;
+        canvas.height = img.height / scale;
+
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+
         resolve( ctx.getImageData(0, 0, canvas.width, canvas.height) )
       }
       img.onerror = e => reject(e)
