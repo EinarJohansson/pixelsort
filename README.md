@@ -7,6 +7,7 @@ Made by using React, Rust and WASM.
 - [ ] Paramterar
   - [ ] Thresholds
   - [ ] Kolumn / rad - vis sortering
+  - [ ] Ladda ner bilden
 - [ ] Optimera
   - [x] Counting sort
   - [x] Minska antalet pixlar att sortera
