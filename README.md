@@ -8,6 +8,6 @@ Made by using React, Rust and WASM.
   - [ ] Thresholds
   - [ ] Kolumn / rad - vis sortering
 - [ ] Optimera
-  - [ ] Counting sort
+  - [x] Counting sort
   - [ ] Minska antalet pixlar att sortera
 - [ ] Design
