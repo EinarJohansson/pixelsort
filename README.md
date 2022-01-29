@@ -9,9 +9,9 @@ Made by using React, Rust and WASM.
   - [ ] Upplösning - (låg / medel / hög)
   - [ ] Kolumn / rad - vis sortering
   - [ ] Ladda ner bilden
-- [ ] Optimera
+- [] Optimera
   - [x] Counting sort
   - [x] Minska antalet pixlar att sortera
 - [ ] Tester
-- [ ] Dela upp react komponenter
+- [x] Dela upp react komponenter
 - [ ] Design
