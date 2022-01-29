@@ -12,4 +12,6 @@ Made by using React, Rust and WASM.
 - [ ] Optimera
   - [x] Counting sort
   - [x] Minska antalet pixlar att sortera
+- [ ] Tester
+- [ ] Dela upp react komponenter
 - [ ] Design
