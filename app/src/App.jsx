@@ -11,20 +11,17 @@ const App = () =>  {
   const [data, setData] = useState(null)
   const [mod, setMod] = useState(null)
   const [sorted, setSorted] = useState(false)
-
-  /* 
-  0 -> red 
-  1 -> green
-  3 -> blue
-  */
   const [mode, setMode] = useState(0) 
   const [threshold, setThreshold] = useState(0) 
 
 
-  useEffect(async () => {
-    let tmp = await init()
-    tmp.init_panic_hook()
-    setMod(tmp)
+  useEffect(() => {
+    const initMod = async () => {
+      let tmp = await init()
+      tmp.init_panic_hook()
+      setMod(tmp)
+    }
+    initMod()
   }, [])
 
   const sort = () => {

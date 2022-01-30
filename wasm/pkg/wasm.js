@@ -157,9 +157,11 @@ export class ImageHandle {
         return ImageHandle.__wrap(ret);
     }
     /**
+    * @param {number} mode
+    * @param {number} threshold
     */
-    sort() {
-        wasm.imagehandle_sort(this.ptr);
+    sort(mode, threshold) {
+        wasm.imagehandle_sort(this.ptr, mode, threshold);
     }
 }
 

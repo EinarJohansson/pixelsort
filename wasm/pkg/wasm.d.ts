@@ -22,8 +22,10 @@ export class ImageHandle {
 */
   constructor(ptr: number, len: number, width: number, height: number);
 /**
+* @param {number} mode
+* @param {number} threshold
 */
-  sort(): void;
+  sort(mode: number, threshold: number): void;
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
@@ -32,7 +34,7 @@ export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly __wbg_imagehandle_free: (a: number) => void;
   readonly imagehandle_new: (a: number, b: number, c: number, d: number) => number;
-  readonly imagehandle_sort: (a: number) => void;
+  readonly imagehandle_sort: (a: number, b: number, c: number) => void;
   readonly init_panic_hook: () => void;
   readonly alloc: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number) => void;
