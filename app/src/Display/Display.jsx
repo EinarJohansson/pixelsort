@@ -18,8 +18,8 @@ const Display = props => {
   return (
     <div id="display">
       <Input src={image} />
-      <Upload setImage={setImage}/>
-      <Output setData={props.setData} image={image} />
+      <Upload setImage={setImage} />
+      <Output setData={props.setData} setOGData={props.setOGData} image={image} />
     </div>
   )
 }

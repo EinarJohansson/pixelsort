@@ -16,7 +16,9 @@ const Output = props => {
       canvas.height = tmp.height / scale;
 
       ctx.drawImage(tmp, 0, 0, canvas.width, canvas.height)
-      props.setData(ctx.getImageData(0, 0, canvas.width, canvas.height))
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height)
+      props.setData(data)
+      props.setOGData(data)
     }
     tmp.src = img;
   }
